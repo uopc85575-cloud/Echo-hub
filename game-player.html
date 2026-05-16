@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Player - Secure Node Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0b14;
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(127, 0, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(127, 0, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ff007f;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Game Info Section */
+        .game-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .game-player {
+            background: rgba(127, 0, 255, 0.1);
+            border: 2px solid rgba(127, 0, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .game-player.no-game {
+            flex-direction: column;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .game-details {
+            background: rgba(127, 0, 255, 0.1);
+            border: 1px solid rgba(127, 0, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-category {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .game-description {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(127, 0, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(255, 0, 127, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(127, 0, 255, 0.2);
+            color: #94a3b8;
+            border: 1px solid rgba(127, 0, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(127, 0, 255, 0.3);
+            color: #ffffff;
+        }
+
+        /* Games Grid */
+        .games-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .game-card {
+            background: rgba(127, 0, 255, 0.1);
+            border: 1px solid rgba(127, 0, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #94a3b8;
+        }
+
+        .game-card:hover {
+            background: rgba(127, 0, 255, 0.2);
+            border-color: rgba(127, 0, 255, 0.5);
+            transform: translateY(-5px);
+            color: #ffffff;
+        }
+
+        .game-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .game-card-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-info {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            nav {
+                width: 100%;
+            }
+
+            nav a {
+                margin: 0 10px;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🎮 Secure Node Network</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="game-player.html">Games</a>
+            <a href="#about">About</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Current Game Player -->
+        <div class="game-info">
+            <div class="game-player no-game" id="gamePlayer">
+                <div style="font-size: 3rem;">🎮</div>
+                <p>Select a game to play</p>
+            </div>
+
+            <div class="game-details">
+                <div>
+                    <h2 class="game-title" id="gameTitle">Select a Game</h2>
+                    <div class="game-category" id="gameCategory">Category</div>
+                    <p class="game-description" id="gameDescription">
+                        Choose a game from the list below to get started. All games are optimized for quick play and work in any browser.
+                    </p>
+                </div>
+
+                <div class="game-controls">
+                    <button class="btn btn-primary" onclick="playGame()">Launch Game</button>
+                    <button class="btn btn-secondary" onclick="resetGame()">Back to Selection</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="games-section">
+            <h3 class="section-title">Available Games</h3>
+            <div class="games-grid" id="gamesGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sample games database
+        const games = [
+            {
+                id: 1,
+                name: "Snake",
+                category: "Classic",
+                icon: "🐍",
+                description: "Classic Snake game. Eat food to grow longer!",
+                url: "https://playsnake.org/"
+            },
+            {
+                id: 2,
+                name: "Pac-Man",
+                category: "Arcade",
+                icon: "👾",
+                description: "Guide Pac-Man through the maze avoiding ghosts.",
+                url: "https://pacman.com/"
+            },
+            {
+                id: 3,
+                name: "Tetris",
+                category: "Puzzle",
+                icon: "📦",
+                description: "Stack falling blocks to complete rows.",
+                url: "https://tetris.com/"
+            },
+            {
+                id: 4,
+                name: "Chess",
+                category: "Strategy",
+                icon: "♟️",
+                description: "Play chess against the computer or online opponents.",
+                url: "https://chess.com/"
+            },
+            {
+                id: 5,
+                name: "Flappy Bird",
+                category: "Action",
+                icon: "🐦",
+                description: "Tap to fly through the pipes!",
+                url: "https://flappybird.io/"
+            },
+            {
+                id: 6,
+                name: "2048",
+                category: "Puzzle",
+                icon: "🔢",
+                description: "Combine tiles to reach the 2048 tile.",
+                url: "https://2048game.com/"
+            }
+        ];
+
+        let currentGame = null;
+
+        // Load games grid
+        function loadGames() {
+            const gamesGrid = document.getElementById('gamesGrid');
+            gamesGrid.innerHTML = games.map(game => `
+                <a href="#" class="game-card" onclick="selectGame(${game.id}); return false;">
+                    <div class="game-card-icon">${game.icon}</div>
+                    <div class="game-card-name">${game.name}</div>
+                </a>
+            `).join('');
+        }
+
+        // Select a game
+        function selectGame(gameId) {
+            currentGame = games.find(g => g.id === gameId);
+            if (currentGame) {
+                document.getElementById('gameTitle').textContent = currentGame.name;
+                document.getElementById('gameCategory').textContent = currentGame.category;
+                document.getElementById('gameDescription').textContent = currentGame.description;
+            }
+        }
+
+        // Play selected game
+        function playGame() {
+            if (!currentGame) {
+                alert('Please select a game first!');
+                return;
+            }
+
+            const gamePlayer = document.getElementById('gamePlayer');
+            gamePlayer.innerHTML = `<iframe src="${currentGame.url}" allowfullscreen></iframe>`;
+        }
+
+        // Reset game view
+        function resetGame() {
+            const gamePlayer = document.getElementById('gamePlayer');
+            gamePlayer.classList.add('no-game');
+            gamePlayer.innerHTML = '<div style="font-size: 3rem;">🎮</div><p>Select a game to play</p>';
+            currentGame = null;
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', loadGames);
+    </script>
+
+</body>
+</html>
